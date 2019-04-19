@@ -17,9 +17,10 @@ app.get('/', function(req, res) {
     res.json('Hola mundo')
 })
 
-
-
-mongoose.connect('mongodb://localhost:27017/cafe', (err, resp) => {
+mongoose.connect('mongodb://localhost:27017/cafe', {
+    useCreateIndex: true,
+    useNewUrlParser: true
+}, (err, resp) => {
     if ( err ) throw err;
     console.log('Base de datos conectada');
 });
