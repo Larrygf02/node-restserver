@@ -2,6 +2,8 @@ const express = require('express')
 const app = express()
 
 const bcrypt = require('bcrypt');
+
+const _ = require('underscore');
 const Usuario = require('../models/usuario')
 
 app.get('/usuario', function(req, res) {
@@ -39,10 +41,12 @@ app.post('/usuario', function(req, res) {
 
 app.put('/usuario/:id', function(req, res) {
     let id = req.params.id;
-    let body = req.body;
-    console.log(body);
+    //pick es una funcion de underscore
+    let body = _.pick(req.body, ['nombre','email','img','role','estado']);
 
-    Usuario.findOneAndUpdate(id, body, (err, usuarioDB) => {
+    console.log(body);
+    //run validators sirve para correr las validaciones cuando se ejecute el metodo
+    Usuario.findOneAndUpdate(id, body, { runValidators: true},(err, usuarioDB) => {
         if (err) {
             return res.status(400).json({
                 ok: false,
