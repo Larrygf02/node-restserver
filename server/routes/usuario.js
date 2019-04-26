@@ -85,6 +85,7 @@ app.put('/usuario/:id', function(req, res) {
 
 })
 
+//parametro id
 app.delete('/usuario/:id', function(req, res) {
     let id = req.params.id;
     Usuario.findByIdAndRemove(id, (err, usuario) => {
