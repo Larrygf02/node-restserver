@@ -17,7 +17,7 @@ app.get('/', function(req, res) {
     res.json('Hola mundo')
 })
 
-mongoose.connect('mongodb://localhost:27017/cafe', {
+mongoose.connect(process.env.URLDB, {
     useCreateIndex: true,
     useNewUrlParser: true
 }, (err, resp) => {
