@@ -13,7 +13,7 @@ app.get('/usuario', function(req, res) {
 
     let limite = req.query.limite || 5;
     limite = Number(limite);
-    Usuario.find({}, 'nombre email role estado google')
+    Usuario.find({estado: true}, 'nombre email role estado google')
             .skip(desde)
             .limit(limite)
             .exec( (err, usuarios) => {
@@ -24,7 +24,7 @@ app.get('/usuario', function(req, res) {
                     });
                 };
 
-                Usuario.count({}, (err, conteo) => {
+                Usuario.count({estado: true}, (err, conteo) => {
                     res.json({
                         ok: true,
                         usuarios,
@@ -88,7 +88,11 @@ app.put('/usuario/:id', function(req, res) {
 //parametro id
 app.delete('/usuario/:id', function(req, res) {
     let id = req.params.id;
-    Usuario.findByIdAndRemove(id, (err, usuario) => {
+    //Usuario.findByIdAndRemove(id, (err, usuario) => {
+    let cambiaEstado = {
+        estado: false
+    };
+    Usuario.findOneAndUpdate(id, cambiaEstado, (err, usuario) => {
         if (err) {
             return res.status(400).json({
                 ok: false,
