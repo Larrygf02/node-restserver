@@ -50,6 +50,7 @@ app.post('/login', (req, res) => {
         })
     })
 })
+
 //configuraciones de google
 async function verify(token) {
     const ticket = await client.verifyIdToken({
@@ -65,15 +66,28 @@ async function verify(token) {
     console.log(payload.email);
     // If request specified a G Suite domain:
     //const domain = payload['hd'];
+    return {
+        nombre: payload.name,
+        email: payload.email,
+        img: payload.picture,
+        google: true
+    }
   }
 //verify().catch(console.error);
 
-app.post('/google', (req, res) => {
+app.post('/google', async (req, res) => {
 
     let token = req.body.idtoken
-    verify(token);
+    let googleUser = await verify(token)
+                    .catch(e => {
+                        return res.status(403).json({
+                            ok: false,
+                            err: e
+                        });
+                    });
+    
     res.json({
-        token
+        usuario: googleUser
     });
 })
 
