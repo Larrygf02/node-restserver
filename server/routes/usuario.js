@@ -69,7 +69,7 @@ app.put('/usuario/:id',[verificaToken, verificaAdmin_Role], function(req, res) {
     //pick es una funcion de underscore
     let body = _.pick(req.body, ['nombre','email','img','role','estado']);
 
-    console.log(body);
+    //console.log(body);
     //run validators sirve para correr las validaciones cuando se ejecute el metodo
     Usuario.findOneAndUpdate(id, body, { runValidators: true},(err, usuarioDB) => {
         if (err) {
