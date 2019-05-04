@@ -1,6 +1,6 @@
 const express = require('express')
 
-let { verificaToken } = require('../middlewares/autenticacion');
+let { verificaToken, verificaAdmin_Role } = require('../middlewares/autenticacion');
 
 let app = express()
 
@@ -87,8 +87,30 @@ app.put('/categoria/:id', verificaToken, (req,res) => {
 });
 
 //Borrar categoria
-app.delete('/categoria/:id', (req,res) => {
+app.delete('/categoria/:id',[verificaToken, verificaAdmin_Role], (req,res) => {
     //Solo un administrador puede borrar categorias
+    let id = req.params.id;
+    Categoria.findByIdAndRemove( id, (err, categoriaDB) => {
+        if (err) {
+            return res.status(500).json({
+                ok: false,
+                err
+            });
+        };
+        if (!categoriaDB) {
+            return res.status(400).json({
+                ok: false,
+                err: {
+                    message: 'El id no existe'
+                }
+            });
+        }
+
+        res.json({
+            ok: true,
+            message: 'Categoria Borrada'
+        })
+    })
 });
 
 
