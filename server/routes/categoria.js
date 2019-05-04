@@ -5,7 +5,7 @@ let { verificaToken } = require('../middlewares/autenticacion');
 let app = express()
 
 let Categoria = require('../models/categoria')
-
+const _ = require('underscore');
 //Mostrar todas las categorias
 app.get('/categoria',verificaToken, (req,res) => {
     Categoria.find( (err, categorias) => {
@@ -69,8 +69,21 @@ app.post('/categoria',verificaToken,(req,res) => {
 
 
 //Actualizar categoria
-app.put('/categoria/:id', (req,res) => {
-    
+app.put('/categoria/:id', verificaToken, (req,res) => {
+    let id = req.params.id;
+    let body = _.pick(req.body, ['descripcion']);
+    Categoria.findOneAndUpdate(id, body, {runValidators: true}, (err, categoriaDB) => {
+        if (err) {
+            return res.status(400).json({
+                ok: false,
+                err
+            });
+        };
+        res.json({
+            ok: true,
+            categoria: categoriaDB  
+        })
+    }) 
 });
 
 //Borrar categoria
