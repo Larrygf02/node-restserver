@@ -3,6 +3,7 @@ const express = require('express')
 const { verificaToken } = require('../middlewares/autenticacion')
 
 let app = express();
+const _ = require('underscore');
 let Producto = require('../models/producto')
 
 // Obtener todos los productos
@@ -45,13 +46,46 @@ app.post('/producto', verificaToken, (req, res) => {
     })
 })
 
-app.put('/producto/:id', (req, res) => {
+app.put('/producto/:id', verificaToken, (req, res) => {
     //actualizar producto
+    let id = req.params.id;
+    let body = req.body;
+
+    Producto.findById(id, (err, productoDB) => {
+        if(err) {
+            return res.status(500).json({
+                ok: false,
+                err
+            })
+        }
+        if (!productoDB) {
+            return res.status(400).json({
+                ok: false,
+                err: {
+                    message: 'EL id no existe'
+                }
+            })
+        }
+    })
+    body = _.pick(req.body, ['nombre', 'precioUni', 'categoria', 'disponible', 'descripcion']);
+    Producto.findOneAndUpdate(id, body, {runValidators: true}, (err, productoDB) => {
+        if (err) {
+            return res.status(400).json({
+                ok: false,
+                err
+            });
+        };
+        res.json({
+            ok: true,
+            categoria: productoDB  
+        })
+    }) 
 })
 
 
 app.delete('/producto/:id', (req, res) => {
     //disponible: False
+
 })
 
 
