@@ -8,14 +8,17 @@ let Categoria = require('../models/categoria')
 const _ = require('underscore');
 //Mostrar todas las categorias
 app.get('/categoria',verificaToken, (req,res) => {
-    Categoria.find( (err, categorias) => {
+    Categoria.find({})
+        .sort('descripcion')
+        .populate('usuario', 'nombre email')
+        .exec((err, categorias) => {
         if (err) {
             return res.status(400).json({
                 ok: false,
                 err
             });
         };
-        Categoria.count((err, conteo) => {
+        Categoria.countDocuments((err, conteo) => {
             res.json({
                 ok: true,
                 categorias,
