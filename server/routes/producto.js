@@ -34,8 +34,36 @@ app.get('/productos', (req, res) => {
             })
 })
 
-app.get('/producto/:id', (req, res) => {
+app.get('/producto/:id', verificaToken, (req, res) => {
     //obtener un producto solo por id
+    let id = req.params.id;
+
+    Producto.findById( id)
+            .populate('usuario', 'nombre email')
+            .populate('categoria', 'descripcion')
+            .exec((err, productoDB) => {
+                if(err) {
+                    return res.status(500).json({
+                        ok: false,
+                        err
+                    })
+                }
+
+                if (!productoDB) {
+                    return res.status(400).json({
+                        ok: false,
+                        err: {
+                            message: 'El id no existe'
+                        }
+                    })
+                }
+
+                res.json({
+                    ok: true,
+                    producto: productoDB
+                })
+            })
+
 } )
 
 app.post('/producto', verificaToken, (req, res) => {
@@ -103,7 +131,7 @@ app.put('/producto/:id', verificaToken, (req, res) => {
 })
 
 
-app.delete('/producto/:id', (req, res) => {
+app.delete('/producto/:id', verificaToken, (req, res) => {
     //disponible: False
 
 })
