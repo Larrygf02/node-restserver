@@ -11,7 +11,27 @@ app.get('/productos', (req, res) => {
     //trae todos los productos
     //populates usuario, categoria
     //paginado
+    let desde = req.query.desde || 0;
+    desde = Number(desde);
 
+    Producto.find({ disponible: true })
+            .skip(desde)
+            .limit(5)
+            .populate('usuario', 'nombre email')
+            .populate('categoria', 'descripcion')
+            .exec((err, productos) => {
+                if(err) {
+                    return res.status(500).json({
+                        ok: false,
+                        err
+                    })
+                }
+
+                res.json({
+                    ok: true,
+                    productos
+                })
+            })
 })
 
 app.get('/producto/:id', (req, res) => {
