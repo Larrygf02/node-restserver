@@ -133,7 +133,38 @@ app.put('/producto/:id', verificaToken, (req, res) => {
 
 app.delete('/producto/:id', verificaToken, (req, res) => {
     //disponible: False
+    let id = req.params.id;
 
+    Producto.findById( id, (err, productoDB) => {
+        if(err) {
+            return res.status(500).json({
+                ok: false,
+                err
+            })
+        }
+        if (!productoDB) {
+            return res.status(400).json({
+                ok: false,
+                err: {
+                    message: 'EL id no existe'
+                }
+            })
+        }
+        productoDB.disponible = false;
+        productoDB.save((err, productoBorrado) => {
+            if(err) {
+                return res.status(500).json({
+                    ok: false,
+                    err
+                })
+            }
+            res.json({
+                ok: true,
+                producto: productoBorrado,
+                mensaje: 'Producto Borrado'
+            })
+        })
+    })
 })
 
 
