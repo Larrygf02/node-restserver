@@ -74,12 +74,14 @@ app.put('/upload/:tipo/:id', function(req, res) {
 function imagenUsuario(id, res, nombreArchivo) {
     Usuario.findById(id, (err, usuarioDB) => {
         if(err) {
+            borraArchivo(nombreArchivo, 'usuarios')
             return res.status(500).json({
                 ok: false,
                 err
             })
         }
         if (!usuarioDB) {
+            borraArchivo(nombreArchivo, 'usuarios')
             return res.status(400).json({
                 ok: false,
                 err: {
@@ -88,11 +90,8 @@ function imagenUsuario(id, res, nombreArchivo) {
             })
         }
 
-        let pathImagen = path.resolve(__dirname, `../../uploads/usuarios/${ usuarioDB.img }`)
-        //confirmar si el path existe
-        if ( fs.existsSync(pathImagen)){
-            fs.unlinkSync(pathImagen);
-        }
+        borraArchivo(usuarioDB.img, 'usuarios')
+
         usuarioDB.img = nombreArchivo;
         usuarioDB.save((err, usuarioGuardado) => {
             res.json({
@@ -105,6 +104,15 @@ function imagenUsuario(id, res, nombreArchivo) {
 
 function imagenProducto() {
 
+}
+
+
+function borraArchivo(nombreImagen, tipo) {
+    let pathImagen = path.resolve(__dirname, `../../uploads/${tipo}/${ nombreImagen }`)
+    //confirmar si el path existe
+    if ( fs.existsSync(pathImagen)){
+        fs.unlinkSync(pathImagen);
+    }
 }
 
 module.exports = app;
