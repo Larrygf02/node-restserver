@@ -2,6 +2,9 @@ const express = require('express')
 const fileUpload = require('express-fileupload')
 const app = express()
 const Usuario = require('../models/usuario')
+const fs = require('fs')
+const path = require('path')
+
 
 app.use(fileUpload());
 
@@ -85,6 +88,11 @@ function imagenUsuario(id, res, nombreArchivo) {
             })
         }
 
+        let pathImagen = path.resolve(__dirname, `../../uploads/usuarios/${ usuarioDB.img }`)
+        //confirmar si el path existe
+        if ( fs.existsSync(pathImagen)){
+            fs.unlinkSync(pathImagen);
+        }
         usuarioDB.img = nombreArchivo;
         usuarioDB.save((err, usuarioGuardado) => {
             res.json({
