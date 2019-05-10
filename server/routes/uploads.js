@@ -55,12 +55,48 @@ app.put('/upload/:tipo/:id', function(req, res) {
               ok: false,
               err
           });
+        //Aqui la imagne se carga
+        imagenUsuario(id, res, nombreArchivo)
+
+
+
     
-        res.json({
+        /*res.json({
             ok: true,
             message: 'Imagen subida correctamente'
-        });
+        });*/
       });
 })
+
+function imagenUsuario(id, res, nombreArchivo) {
+    Usuario.findById(id, (err, usuarioDB) => {
+        if(err) {
+            return res.status(500).json({
+                ok: false,
+                err
+            })
+        }
+        if (!usuarioDB) {
+            return res.status(400).json({
+                ok: false,
+                err: {
+                    message: 'El usuario no existe'
+                }
+            })
+        }
+
+        usuarioDB.img = nombreArchivo;
+        usuarioDB.save((err, usuarioGuardado) => {
+            res.json({
+                ok: true,
+                usuario: usuarioGuardado
+            })
+        })
+    })
+}
+
+function imagenProducto() {
+
+}
 
 module.exports = app;
