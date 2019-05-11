@@ -2,6 +2,7 @@ const express = require('express')
 const fileUpload = require('express-fileupload')
 const app = express()
 const Usuario = require('../models/usuario')
+const Producto = require('../models/producto')
 const fs = require('fs')
 const path = require('path')
 
@@ -58,12 +59,12 @@ app.put('/upload/:tipo/:id', function(req, res) {
               ok: false,
               err
           });
-        //Aqui la imagne se carga
-        imagenUsuario(id, res, nombreArchivo)
-
-
-
-    
+        //Aqui la imagen se carga
+        if (tipo == 'usuarios') {
+            imagenUsuario(id, res, nombreArchivo)
+        }else if (tipo == 'productos') {
+            imagenProducto(id, res, nombreArchivo)
+        }
         /*res.json({
             ok: true,
             message: 'Imagen subida correctamente'
@@ -102,8 +103,35 @@ function imagenUsuario(id, res, nombreArchivo) {
     })
 }
 
-function imagenProducto() {
+function imagenProducto(id, res, nombreArchivo) {
+    Producto.findById(id, (err, productoDB) => {
+        if(err) {
+            borraArchivo(nombreArchivo, 'productos')
+            return res.status(500).json({
+                ok: false,
+                err
+            })
+        }
+        if (!productoDB) {
+            borraArchivo(nombreArchivo, 'productos')
+            return res.status(400).json({
+                ok: false,
+                err: {
+                    message: 'El producto no existe'
+                }
+            })
+        }
 
+        borraArchivo(productoDB.img, 'productos')
+
+        productoDB.img = nombreArchivo;
+        productoDB.save((err, productoGuardado) => {
+            res.json({
+                ok: true,
+                producto: productoGuardado
+            })
+        })
+    })
 }
 
 
